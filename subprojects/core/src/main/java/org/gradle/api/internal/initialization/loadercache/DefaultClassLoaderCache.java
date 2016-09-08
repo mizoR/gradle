@@ -58,7 +58,18 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
 
         synchronized (lock) {
             CachedClassLoader cachedLoader = byId.get(id);
+
+            logCurrentState();
+
+            LOGGER.debug("[CLC] ID                : " + id);
+            if (cachedLoader != null) {
+                LOGGER.debug("[CLC] ID MATCH      - ID: " + id);
+            }
+
             if (cachedLoader == null || !cachedLoader.is(spec)) {
+                if (cachedLoader != null) {
+                    LOGGER.debug("[CLC] SPEC MISMATCH - ID: " + id);
+                }
                 CachedClassLoader newLoader = getAndRetainLoader(classPath, spec, id);
                 byId.put(id, newLoader);
 
@@ -67,11 +78,42 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
                     cachedLoader.release(id);
                 }
 
+                LOGGER.debug("[CLC] CREATED NEW   - ID: " + id);
                 return newLoader.classLoader;
             } else {
+                LOGGER.debug("[CLC] SUCCESS       - ID: " + id);
                 return cachedLoader.classLoader;
             }
         }
+    }
+
+    private void logCurrentState() {
+        StackTraceElement frame = Thread.currentThread().getStackTrace()[3];
+        String caller = frame.getClassName() + "." + frame.getMethodName() + "():" + frame.getLineNumber();
+
+        String byIdState = "";
+        String bySpecState = "";
+        for (Map.Entry<ClassLoaderId, CachedClassLoader> e : byId.entrySet()) {
+            byIdState += "\n[CLC]    " + e.getKey().getClass().getSimpleName() + ": " + e.getKey().toString();
+            byIdState += "\n[CLC]    " + e.getValue().getClass().getSimpleName() + ": " + e.getValue().toString();
+            byIdState += "\n[CLC]";
+
+        }
+        for (Map.Entry<ClassLoaderSpec, CachedClassLoader> e : bySpec.entrySet()) {
+            bySpecState += "\n[CLC]    " + e.getValue().getClass().getSimpleName() + ": " + e.getValue().toString();
+            bySpecState += "\n[CLC]";
+        }
+
+        String cacheState = ""
+            + "\n[CLC] Attempt to Retrieve Class Loader by DefaultClassLoaderCache.get() (caller " + caller + ")"
+            + "\n[CLC] ================================================================="
+            + "\n[CLC]   Cache byId:"
+            + byIdState
+            + "\n[CLC]   Cache bySpec: "
+            + bySpecState;
+
+
+       LOGGER.debug(cacheState); //, new Exception("Stack Trace for Class Loader Cache"));
     }
 
     @Override
@@ -224,6 +266,35 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
 
         public boolean is(ClassLoaderSpec spec) {
             return this.spec.equals(spec);
+        }
+
+        public String toString() {
+            FilteringClassLoader.Spec filterSpec = spec.filterSpec;
+            return "\n"
+                + "\n[CLC]      classLoader:             " + Integer.toHexString(classLoader.hashCode()) + " (" + classLoader.getClass().getSimpleName() + ")"
+                + "\n[CLC]      parent.parent:           " + (parent == null ? "null" : Integer.toHexString(parent.classLoader.hashCode()) + " (" + parent.classLoader.getClass().getSimpleName() + ")")
+                + "\n[CLC]      spec.parent:             " + Integer.toHexString(spec.parent.hashCode()) + " (" + spec.parent.getClass().getSimpleName() + ")"
+                + "\n[CLC]      spec.classPathSnapshot:  " + spec.classPathSnapshot.toString()
+
+                + (filterSpec == null ? ""
+
+                + "\n[CLC]      spec.filterSpec:         null" : ""
+
+                + "\n[CLC]      spec.filterSpec.packageNames:              " + printSet(filterSpec.getPackageNames())
+                + "\n[CLC]      spec.filterSpec.packagePrefixes:           " + printSet(filterSpec.getPackagePrefixes())
+                + "\n[CLC]      spec.filterSpec.resourceNames:             " + printSet(filterSpec.getResourceNames())
+                + "\n[CLC]      spec.filterSpec.resourcePrefixes:          " + printSet(filterSpec.getResourcePrefixes())
+                + "\n[CLC]      spec.filterSpec.classNames:                " + printSet(filterSpec.getClassNames())
+                + "\n[CLC]      spec.filterSpec.disallowedClassNames:      " + printSet(filterSpec.getDisallowedClassNames())
+                + "\n[CLC]      spec.filterSpec.disallowedPackagePrefixes: " + printSet(filterSpec.getDisallowedPackagePrefixes()));
+        }
+
+        private String printSet(Set<String> set) {
+            String s = "";
+            for (String entry : set) {
+                s += entry + ", ";
+            }
+            return s;
         }
 
         public CachedClassLoader retain(ClassLoaderId loaderId) {

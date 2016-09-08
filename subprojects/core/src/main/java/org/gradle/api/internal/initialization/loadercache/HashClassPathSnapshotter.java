@@ -96,6 +96,18 @@ public class HashClassPathSnapshotter implements ClassPathSnapshotter {
             return hash.equals(that.hash) && files.equals(that.files);
         }
 
+        public String toString() {
+            return hash + printFiles();
+        }
+
+        private String printFiles() {
+            String s = "";
+            for (String entry : files) {
+                s += entry + ", ";
+            }
+            return "(" + s + ")";
+        }
+
         @Override
         public int hashCode() {
             int result = files.hashCode();
