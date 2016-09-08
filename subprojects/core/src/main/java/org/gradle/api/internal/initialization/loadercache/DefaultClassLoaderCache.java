@@ -241,8 +241,8 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
 
             boolean equalsParent = Objects.equal(this.parent, that.parent);
             if (!equalsParent) {
-                LOGGER.info("[CLC - Equals] parent.equals(that.parent) = false : this.parent=" + parent.hashCode() + "|" + parent.getClass().getSimpleName() +
-                    " that.parent=" + that.parent.hashCode() + "|" + that.parent.getClass().getSimpleName());
+                LOGGER.info("[CLC - Equals] parent.equals(that.parent) = false : this.parent=" + parent.hashCode() + "|" + parent.getClass().getSimpleName()
+                    + " that.parent=" + that.parent.hashCode() + "|" + that.parent.getClass().getSimpleName());
             }
             boolean equalsClassPathSnapshot = this.classPathSnapshot.equals(that.classPathSnapshot);
             if (!equalsClassPathSnapshot) {

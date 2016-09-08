@@ -118,8 +118,9 @@ public class HashClassPathSnapshotter implements ClassPathSnapshotter {
          * Based on AbstractList.equals()
          */
         public <E> boolean abstractListEqualsWithLog(List<E> l, Object o) {
-            if (o == this)
+            if (o == this) {
                 return true;
+            }
             if (!(o instanceof List)) {
                 LOGGER.info("[CLC - Equals]     !(o instanceof List)): " + o.getClass().getSimpleName());
                 return false;
