@@ -101,16 +101,14 @@ public class HashClassPathSnapshotter implements ClassPathSnapshotter {
             boolean equalsFiles = files.equals(that.files);
             boolean equalsFilesWithLog = abstractListEqualsWithLog(files, that.files);
             if (equalsFiles != equalsFilesWithLog) {
-                LOGGER.info("[CLC - Equals] UNEXPECTED - equalsFiles != equalsFilesWithLog: equalsFiles=" + equalsFiles + " equalsFilesWithLog=" + equalsFilesWithLog);
+                LOGGER.info("[CLC - Equals]   UNEXPECTED - equalsFiles != equalsFilesWithLog: equalsFiles=" + equalsFiles + " equalsFilesWithLog=" + equalsFilesWithLog);
             }
 
             if (!equalsHash) {
-                LOGGER.info("[CLC - Equals] Objects.equal(this.parent, that.parent) = false");
-                LOGGER.info("[CLC - Equals] hash = " + hash.toString());
+                LOGGER.info("[CLC - Equals]   Objects.equal(this.parent, that.parent) = false : hash = " + hash.toString());
             }
             if (!equalsFiles) {
-                LOGGER.info("[CLC - Equals] this.classPathSnapshot.equals(that.classPathSnapshot)) = false");
-                LOGGER.info("[CLC - Equals] files = " + printFiles());
+                LOGGER.info("[CLC - Equals]   files.equals(that.files)) = false");
             }
 
             return equalsHash && equalsFiles;
@@ -123,7 +121,7 @@ public class HashClassPathSnapshotter implements ClassPathSnapshotter {
             if (o == this)
                 return true;
             if (!(o instanceof List)) {
-                LOGGER.info("[CLC - Equals] !(o instanceof List)): " + o.getClass().getSimpleName());
+                LOGGER.info("[CLC - Equals]     !(o instanceof List)): " + o.getClass().getSimpleName());
                 return false;
             }
 
@@ -133,13 +131,13 @@ public class HashClassPathSnapshotter implements ClassPathSnapshotter {
                 E o1 = e1.next();
                 Object o2 = e2.next();
                 if (!(o1==null ? o2==null : o1.equals(o2))) {
-                    LOGGER.info("[CLC - Equals] o1 != o2 : " + "o1=" + o1 + " o2=" + o2);
+                    LOGGER.info("[CLC - Equals]     o1 != o2 : " + "o1=" + o1 + " o2=" + o2);
                     return false;
                 }
             }
             boolean lengthDiff = !(e1.hasNext() || e2.hasNext());
             if (!lengthDiff) {
-                LOGGER.info("[CLC - Equals] e1.size() != e2.size() : " + "l1.size()=" + l.size() + " l2.size()=" + ((List<?>) o).size());
+                LOGGER.info("[CLC - Equals]     e1.size() != e2.size() : " + "l1.size()=" + l.size() + " l2.size()=" + ((List<?>) o).size());
             }
             return lengthDiff;
         }

@@ -238,16 +238,17 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
         @Override
         public boolean equals(Object o) {
             ClassLoaderSpec that = (ClassLoaderSpec) o;
-            boolean equalsParent = Objects.equal(this.parent, that.parent);
-            boolean equalsClassPathSnapshot = this.classPathSnapshot.equals(that.classPathSnapshot);
-            boolean equalsFilterSpec = Objects.equal(this.filterSpec, that.filterSpec);
 
+            boolean equalsParent = Objects.equal(this.parent, that.parent);
             if (!equalsParent) {
-                LOGGER.info("[CLC - Equals] Objects.equal(this.parent, that.parent) = " + equalsParent);
+                LOGGER.info("[CLC - Equals] parent.equals(that.parent) = false : this.parent=" + parent.hashCode() + "|" + parent.getClass().getSimpleName() +
+                    " that.parent=" + that.parent.hashCode() + "|" + that.parent.getClass().getSimpleName());
             }
+            boolean equalsClassPathSnapshot = this.classPathSnapshot.equals(that.classPathSnapshot);
             if (!equalsClassPathSnapshot) {
-                LOGGER.info("[CLC - Equals] this.classPathSnapshot.equals(that.classPathSnapshot)) = " + equalsClassPathSnapshot);
+                LOGGER.info("[CLC - Equals] classPathSnapshot.equals(that.classPathSnapshot)) = " + equalsClassPathSnapshot);
             }
+            boolean equalsFilterSpec = Objects.equal(this.filterSpec, that.filterSpec);
             if (!equalsFilterSpec) {
                 LOGGER.info("[CLC - Equals] Objects.equal(this.filterSpec, that.filterSpec) = " + equalsFilterSpec);
             }
