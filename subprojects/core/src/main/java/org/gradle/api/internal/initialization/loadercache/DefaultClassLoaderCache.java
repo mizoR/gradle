@@ -251,7 +251,7 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
         }
 
         private void close() {
-            ClassLoaderUtils.tryClose(classLoader);
+//            ClassLoaderUtils.tryClose(classLoader);
         }
     }
 
