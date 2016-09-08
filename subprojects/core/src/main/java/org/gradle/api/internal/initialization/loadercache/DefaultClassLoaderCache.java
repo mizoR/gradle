@@ -238,9 +238,23 @@ public class DefaultClassLoaderCache implements ClassLoaderCache, Stoppable {
         @Override
         public boolean equals(Object o) {
             ClassLoaderSpec that = (ClassLoaderSpec) o;
-            return Objects.equal(this.parent, that.parent)
-                && this.classPathSnapshot.equals(that.classPathSnapshot)
-                && Objects.equal(this.filterSpec, that.filterSpec);
+            boolean equalsParent = Objects.equal(this.parent, that.parent);
+            boolean equalsClassPathSnapshot = this.classPathSnapshot.equals(that.classPathSnapshot);
+            boolean equalsFilterSpec = Objects.equal(this.filterSpec, that.filterSpec);
+
+            if (!equalsParent) {
+                LOGGER.info("[CLC - Equals] Objects.equal(this.parent, that.parent) = " + equalsParent);
+            }
+            if (!equalsClassPathSnapshot) {
+                LOGGER.info("[CLC - Equals] this.classPathSnapshot.equals(that.classPathSnapshot)) = " + equalsClassPathSnapshot);
+            }
+            if (!equalsFilterSpec) {
+                LOGGER.info("[CLC - Equals] Objects.equal(this.filterSpec, that.filterSpec) = " + equalsFilterSpec);
+            }
+
+            return equalsParent
+                && equalsClassPathSnapshot
+                && equalsFilterSpec;
         }
 
         @Override

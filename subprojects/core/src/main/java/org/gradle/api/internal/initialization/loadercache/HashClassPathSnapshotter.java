@@ -22,6 +22,8 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import org.gradle.api.internal.hash.Hasher;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.internal.FileUtils;
 import org.gradle.internal.classloader.ClassPathSnapshot;
 import org.gradle.internal.classloader.ClassPathSnapshotter;
@@ -30,9 +32,11 @@ import org.gradle.internal.classpath.ClassPath;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 public class HashClassPathSnapshotter implements ClassPathSnapshotter {
+    private static final Logger LOGGER = Logging.getLogger(HashClassPathSnapshotter.class);
 
     private final Hasher hasher;
 
@@ -93,7 +97,51 @@ public class HashClassPathSnapshotter implements ClassPathSnapshotter {
 
             HashClassPathSnapshot that = (HashClassPathSnapshot) o;
 
-            return hash.equals(that.hash) && files.equals(that.files);
+            boolean equalsHash = hash.equals(that.hash);
+            boolean equalsFiles = files.equals(that.files);
+            boolean equalsFilesWithLog = abstractListEqualsWithLog(files, that.files);
+            if (equalsFiles != equalsFilesWithLog) {
+                LOGGER.info("[CLC - Equals] UNEXPECTED - equalsFiles != equalsFilesWithLog: equalsFiles=" + equalsFiles + " equalsFilesWithLog=" + equalsFilesWithLog);
+            }
+
+            if (!equalsHash) {
+                LOGGER.info("[CLC - Equals] Objects.equal(this.parent, that.parent) = false");
+                LOGGER.info("[CLC - Equals] hash = " + hash.toString());
+            }
+            if (!equalsFiles) {
+                LOGGER.info("[CLC - Equals] this.classPathSnapshot.equals(that.classPathSnapshot)) = false");
+                LOGGER.info("[CLC - Equals] files = " + printFiles());
+            }
+
+            return equalsHash && equalsFiles;
+        }
+
+        /**
+         * Based on AbstractList.equals()
+         */
+        public <E> boolean abstractListEqualsWithLog(List<E> l, Object o) {
+            if (o == this)
+                return true;
+            if (!(o instanceof List)) {
+                LOGGER.info("[CLC - Equals] !(o instanceof List)): " + o.getClass().getSimpleName());
+                return false;
+            }
+
+            ListIterator<E> e1 = l.listIterator();
+            ListIterator<?> e2 = ((List<?>) o).listIterator();
+            while (e1.hasNext() && e2.hasNext()) {
+                E o1 = e1.next();
+                Object o2 = e2.next();
+                if (!(o1==null ? o2==null : o1.equals(o2))) {
+                    LOGGER.info("[CLC - Equals] o1 != o2 : " + "o1=" + o1 + " o2=" + o2);
+                    return false;
+                }
+            }
+            boolean lengthDiff = !(e1.hasNext() || e2.hasNext());
+            if (!lengthDiff) {
+                LOGGER.info("[CLC - Equals] e1.size() != e2.size() : " + "l1.size()=" + l.size() + " l2.size()=" + ((List<?>) o).size());
+            }
+            return lengthDiff;
         }
 
         public String toString() {
