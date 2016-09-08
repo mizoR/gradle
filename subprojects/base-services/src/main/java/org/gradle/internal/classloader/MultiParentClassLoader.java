@@ -126,9 +126,9 @@ public class MultiParentClassLoader extends ClassLoader implements ClassLoaderHi
 
     @Override
     public void close() throws IOException {
-        for (ClassLoader parent : parents) {
-            ClassLoaderUtils.tryClose(parent);
-        }
+//        for (ClassLoader parent : parents) {
+//            ClassLoaderUtils.tryClose(parent);
+//        }
     }
 
     public static class Spec extends ClassLoaderSpec {
