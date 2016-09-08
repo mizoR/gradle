@@ -17,7 +17,6 @@ package org.gradle.internal.classloader;
 
 import org.gradle.api.Nullable;
 import org.gradle.internal.UncheckedException;
-import org.gradle.internal.concurrent.CompositeStoppable;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,7 +25,7 @@ import java.net.URLConnection;
 
 public abstract class ClassLoaderUtils {
     public static void tryClose(@Nullable ClassLoader classLoader) {
-        CompositeStoppable.stoppable(classLoader).stop();
+//        CompositeStoppable.stoppable(classLoader).stop();
     }
 
     public static void disableUrlConnectionCaching() {
