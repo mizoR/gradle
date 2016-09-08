@@ -531,6 +531,7 @@ public class DefaultTaskGraphExecuterTest {
             will(returnValue(outputs));
             allowing(outputs).getFiles();
             will(returnValue(root.files()));
+            allowing(task).processAnnotatedTaskInputsAndOutputs();
         }});
     }
 
